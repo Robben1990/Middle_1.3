@@ -116,17 +116,14 @@ private:
 
 int main()
 {
-
-	
 	Storage A(5, 'd', 2, 3);
 	A.PrintData();
 	
 	Storage B(3, 's', 5, 4);
 	B.PrintData();
+
 	B = A;
 	B.PrintData();
-
-	
 }
 
 
