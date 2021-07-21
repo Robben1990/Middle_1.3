@@ -4,109 +4,130 @@
 #include <iostream>
 #include <cmath>
 
-class Vector
+class Storage
 {
 public:
-	Vector()
+	Storage(int size, char index, int column, int row)
 	{
-		x = 0;
-		y = 0;
-		z = 0;
-	}
-	Vector(float x, float y, float z)
-	{
-		this -> x = x;
-		this -> y = y;
-		this -> z = z;
-	}
-	friend bool operator>(const Vector& A, const Vector& B);
-
-	friend Vector operator*(const Vector& A, const float& B);
-
-	friend Vector operator+(const Vector& a, const Vector& b);
-
-	friend Vector operator- (const Vector& A, const Vector& B);
-
-	friend std::ostream& operator<< (std::ostream& out,const Vector& A);
-
-	friend std::istream& operator>> (std::istream& in, Vector& A);
-
-
-	operator float()
-	{
-		return sqrt(x * x + y * y + z * z);
-	}
-	
-	float operator[]( int index)
-	{
-		switch (index)
+		this->size = size;
+		this->num = new int[size];
+		this->index = new char(index);
+		this->column = column;
+		this->row = row;
+		this->Point = new int* [row];
+		for (int i = 0; i< row; i++ )
 		{
-		case 0: return x; break;
-		case 1: return y; break;
-		case 2: return z; break;
-		default: std::cout << "Index error";
-			break;
+			Point[i] = new int[column];
+		}
+		FillStorage();
+	}
+
+
+	Storage& operator=(const Storage& other)
+	{
+		size = other.size;
+		row = other.row;
+		column = other.column;
+		if (other.index && other.num && other.Point)
+		{
+			if (index) delete index;
+			if (num) delete[] num ;
+			if (Point) delete Point;
+
+			index = new char(*(other.index));
+
+			num = new int[size];
+			for(int j = 0; j< size;j++ )
+			{
+				num[j] = other.num[j];
+			}
+
+			Point = new int* [row];
+			for (int i =0; i<row; i++)
+			{
+				Point[i] = new int [column] ;
+				for (int k = 0; k < column; k++)
+					Point[i][k] = other.Point[i][k];
+			}
+		}
+		return *this;
+	}
+
+
+	~Storage()
+	{
+		std::cout << "Calling destructor! \n";
+		delete index;
+		for (int k=0; k< row; k++)
+		{
+			delete [] Point[k];
+		}
+		delete[]num;
+	}
+
+	void PrintData() const
+	{
+		
+		std::cout << "Print 2d array:\n";
+		for (int i = 0; i < row; i++)
+		{
+			for (int j=0; j < column;j++)
+			{
+				std::cout << Point[i][j] << '\t';
+			}
+			std::cout << '\n';
+		}
+		std::cout << '\n';
+		
+		std::cout << "Print 1d array:\n ";
+		for(int k=0; k <size; k++)
+		{
+			std::cout << num[k] <<'\t' ;
+		}
+		std::cout << '\n';
+		std::cout << '\n';
+
+	}
+	void FillStorage() const
+	{
+		for(int k=0; k< size; k++)
+		{
+			num[k] = rand() % 99 + 1;
 		}
 		
+		for (int i = 0; i<row; i++)
+		{
+			for (int j=0; j< column;j++)
+			{
+				 Point[i][j] = rand() % 20;
+			}
+		}
 	}
+	
 private:
-	float x;
-	float y;
-	float z;
+	int column;
+	int row;
+	int size;
+	int* num;
+	char* index;
+	int** Point;
+	
 };
-bool operator>(const Vector& A, const Vector& B)
-{
-	return false;
-}
-
-Vector operator* (const Vector& A, const float& B)
-{
-	return Vector(A.x * B , A.y * B  ,A.z * B);
-}
-
-Vector operator+(const Vector& a,const Vector& b)
-{
-	return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-
-Vector operator- (const Vector& A, const Vector& B)
-{
-	return Vector(A.x - B.x, A.y - B.y, A.z - B.z);
-}
-
-std::ostream& operator<< (std::ostream& out,const Vector& A)
-{
-	out << ' ' << A.x << ' ' << A.y << ' ' << A.z;
-	return out;
-}
-
-std::istream& operator>> (std::istream& in,  Vector& A)
-{
-	in >> A.x;
-	in >> A.y;
-	in>> A.z;
-	return in;
-}
 
 int main()
 {
-	Vector A(1.0f, 2.0f, 5.0f);
-	Vector B(4.0f, 5.0f, 10.0f);
-	Vector C;
-	C = B + A;
 
-	std::cout << A + B<<'\n';
-	std::cout << B[1];
-	std::cout << float(C)<<'\n';
-	std::cout << "A length is " << static_cast <float>(A)<<'\n';
-	std::cout << B*5.5f << '\n';
-	std::cout << B - A <<'\n';
 	
-	Vector D;
-	std::cout << "Enter coordinates: \n";
-	std::cin >> D;
-	std::cout << "Vector D: " << D;
+	Storage A(5, 'd', 2, 3);
+	A.PrintData();
+	
+	Storage B(3, 's', 5, 4);
+	B.PrintData();
+	B = A;
+	B.PrintData();
 
+	
 }
+
 
 
